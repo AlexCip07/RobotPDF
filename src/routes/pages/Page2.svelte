@@ -1,7 +1,16 @@
 <script>
    export let documentInfo;
     import { onMount } from 'svelte';
+    import { counter  } from './counter.js';
+    let myCount = 0;
 
+onMount(() => {
+  // Increment the shared counter and get the updated value
+  counter.update(n => {
+    myCount = n + 1;  // Save snapshot
+    return myCount;    // Update shared counter
+  });
+});
 
    
 </script>
@@ -24,9 +33,9 @@
                         <tbody>
                             <tr>
                                 <td style="border: none; text-align: right;">Page</td>
-                                <td style="border: none; text-align: center;">2</td>
+                                <td style="border: none; text-align: center;">{myCount}</td>
                                 <td style="border: none; text-align: center;">/</td>
-                                <td style="border: none; text-align: left;">13</td>
+                                <td style="border: none; text-align: left;">{$counter}</td>
                             </tr>
                         </tbody>
                     </table>
