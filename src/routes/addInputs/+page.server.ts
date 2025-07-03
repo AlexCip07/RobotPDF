@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { db } from '$lib/db';
 import { users } from '$lib/schema';
 import { eq, or } from 'drizzle-orm';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Constants for the user to be added
 const CONSTANT_USER = {

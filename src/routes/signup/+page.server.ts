@@ -2,7 +2,7 @@ import { db } from '$lib/db';
 import { users } from '$lib/schema';
 import { eq } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export const actions = {
   default: async ({ request }) => {
