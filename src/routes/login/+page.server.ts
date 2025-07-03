@@ -3,6 +3,7 @@ import { db } from '$lib/db';
 import { users } from '$lib/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { dev } from '$app/environment';
 
 export const actions = {
     default: async ({ request, cookies }) => {
@@ -64,7 +65,7 @@ export const actions = {
                 path: '/',
                 httpOnly: true,
                 sameSite: 'strict',
-                secure: process.env.NODE_ENV === 'production',
+                secure: !dev,
                 maxAge: 60 * 60 * 24 * 30, // 30 days
             });
 
