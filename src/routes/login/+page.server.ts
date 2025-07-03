@@ -6,54 +6,59 @@ import bcrypt from 'bcrypt';
 
 export const actions = {
     default: async ({ request, cookies }) => {
+        console.log('Starting login process...');
         const data = await request.formData();
         const email = data.get('email');
         const password = data.get('password');
 
         if (!email || !password) {
+            console.log('Missing email or password');
             return fail(400, { 
                 error: 'Email and password are required',
                 email: email
             });
         }
 
+        let user;
+
         try {
             console.log('Attempting to find user with email:', email);
             
             // Find user by email
-            const [user] = await db
+            const [foundUser] = await db
                 .select()
                 .from(users)
                 .where(eq(users.email, email.toString()));
 
-            console.log('Database query result:', user ? 'User found' : 'User not found');
+            console.log('Database query result:', foundUser ? 'User found' : 'User not found');
 
-            if (!user) {
+            if (!foundUser) {
+                console.log('User not found, returning error');
                 return fail(400, { 
                     error: 'Invalid email or password',
                     email: email
                 });
             }
 
+            user = foundUser;
+
             // Verify password
-            try {
-                const passwordMatch = await bcrypt.compare(password.toString(), user.password);
-                console.log('Password verification result:', passwordMatch ? 'Match' : 'No match');
-                
-                if (!passwordMatch) {
-                    return fail(400, { 
-                        error: 'Invalid email or password',
-                        email: email
-                    });
-                }
-            } catch (bcryptError) {
-                console.error('bcrypt error:', bcryptError);
-                return fail(500, { 
-                    error: 'Error verifying password',
+            console.log('Starting password verification...');
+            const passwordMatch = await bcrypt.compare(password.toString(), user.password);
+            console.log('Password verification result:', passwordMatch ? 'Match' : 'No match');
+
+            if (!passwordMatch) {
+                console.log('Password does not match, returning error');
+                return fail(400, { 
+                    error: 'Invalid email or password',
                     email: email
                 });
             }
 
+            console.log('Login successful for user:', email);
+            console.log('User admin status:', user.admin ? 'Admin User' : 'Regular User');
+
+            console.log('Setting session cookie...');
             // Set session cookie
             cookies.set('session', user.id.toString(), {
                 path: '/',
@@ -63,23 +68,21 @@ export const actions = {
                 maxAge: 60 * 60 * 24 * 30, // 30 days
             });
 
-            // Redirect based on admin status
-            if (user.admin) {
-                throw redirect(302, '/');
-            } else {
-                throw redirect(302, '/blank');
-            }
-
         } catch (error) {
-            console.error('Login error details:', {
-                name: error.name,
-                message: error.message,
-                stack: error.stack
-            });
+            // Handle actual errors
+            console.error('Login error:', error);
             return fail(500, { 
-                error: 'Internal server error. Please check server logs.',
+                error: 'Internal server error. Please try again later.',
                 email: email
             });
         }
+
+        // Handle redirect outside try/catch
+       
+            console.log('Redirecting to welcome page');
+            throw redirect(302, '/welcome');
+        
+        
+      
     }
 }; 

@@ -18,9 +18,20 @@
 
 	<form method="POST" use:enhance={() => {
 		isLoading = true;
-		return async ({ update }) => {
+		return async ({ result, update }) => {
 			isLoading = false;
+			
+			if (result.type === 'redirect') {
+				// Handle redirect for regular users
+				window.location.href = result.location;
+				return;
+			}
+			
+			// For admin users or other cases
 			await update();
+			if (result.type === 'success') {
+				window.location.reload();
+			}
 		};
 	}}>
 		<div class="form-group">

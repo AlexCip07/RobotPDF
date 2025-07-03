@@ -8,17 +8,19 @@
 	function navigateToCheckInputs() {
 		goto('/checkInputs');
 	}
+
+	function navigateToLogin() {
+		goto('/login');
+	}
 </script>
 
 <div class="container">
 	<h1>Welcome</h1>
 	<div class="button-group">
-		<button on:click={navigateToAddInputs}>
-			Add Inputs
+		<button on:click={navigateToLogin}>
+			Login or Signup
 		</button>
-		<button on:click={navigateToCheckInputs}>
-			Check Inputs
-		</button>
+		
 	</div>
 </div>
 

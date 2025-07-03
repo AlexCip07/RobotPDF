@@ -1,5 +1,8 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { enhance } from '$app/forms';
+
+	export let form;
 
 	let firstName = '';
 	let lastName = '';
@@ -12,24 +15,30 @@
 	let isLoading = false;
 	let acceptTerms = false;
 
-	function handleSignup() {
+	function validateForm() {
 		if (password !== confirmPassword) {
 			alert('Passwords do not match!');
-			return;
+			return false;
 		}
 		
 		if (!acceptTerms) {
 			alert('Please accept the terms and conditions');
-			return;
+			return false;
 		}
 
-		isLoading = true;
-		// Simulate signup process
-		setTimeout(() => {
+		return true;
+	}
+
+	function handleEnhance() {
+		return async ({ update }) => {
+			isLoading = true;
+			await update();
 			isLoading = false;
-					// Here you would typically handle actual signup logic
-		console.log('Signup attempt:', { firstName, lastName, username, email, password });
-		}, 2000);
+
+			if (form?.success) {
+				goto('/login');
+			}
+		};
 	}
 
 	function goToLogin() {
@@ -51,12 +60,19 @@
 		<p class="auth-subtitle">Join us and start your journey today</p>
 	</div>
 
-	<form on:submit|preventDefault={handleSignup}>
+	{#if form?.error}
+		<div class="error-message" role="alert">
+			{form.error}
+		</div>
+	{/if}
+
+	<form method="POST" use:enhance={handleEnhance} on:submit|preventDefault={() => validateForm()}>
 		<div class="form-row">
 			<div class="form-group">
 				<label for="firstName" class="form-label">First Name</label>
 				<input
 					id="firstName"
+					name="firstName"
 					type="text"
 					class="form-input"
 					placeholder="Enter your first name"
@@ -69,6 +85,7 @@
 				<label for="lastName" class="form-label">Last Name</label>
 				<input
 					id="lastName"
+					name="lastName"
 					type="text"
 					class="form-input"
 					placeholder="Enter your last name"
@@ -82,6 +99,7 @@
 			<label for="username" class="form-label">Username</label>
 			<input
 				id="username"
+				name="username"
 				type="text"
 				class="form-input"
 				placeholder="Choose a unique username"
@@ -94,6 +112,7 @@
 			<label for="email" class="form-label">Email Address</label>
 			<input
 				id="email"
+				name="email"
 				type="email"
 				class="form-input"
 				placeholder="Enter your email"
@@ -107,6 +126,7 @@
 			<div class="password-input-container">
 				<input
 					id="password"
+					name="password"
 					type={showPassword ? 'text' : 'password'}
 					class="form-input"
 					placeholder="Create a strong password"
@@ -193,6 +213,15 @@
 </div>
 
 <style>
+	.error-message {
+		background-color: #1a1a1a;
+		border: 1px solid #333;
+		color: #fff;
+		padding: 0.75rem;
+		border-radius: 0.375rem;
+		margin-bottom: 1rem;
+	}
+
 	.form-row {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -213,7 +242,7 @@
 		cursor: pointer;
 		font-size: 16px;
 		padding: 0;
-		color: #666;
+		color: #333;
 	}
 
 	.password-strength {
@@ -226,7 +255,7 @@
 	.strength-bar {
 		flex: 1;
 		height: 4px;
-		background: #e1e5e9;
+		background: #e1e1e1;
 		border-radius: 2px;
 		overflow: hidden;
 	}
@@ -239,22 +268,22 @@
 
 	.strength-fill.weak {
 		width: 33%;
-		background: #e74c3c;
+		background: #333;
 	}
 
 	.strength-fill.medium {
 		width: 66%;
-		background: #f39c12;
+		background: #666;
 	}
 
 	.strength-fill.strong {
 		width: 100%;
-		background: #27ae60;
+		background: #000;
 	}
 
 	.strength-text {
 		font-size: 12px;
-		color: #666;
+		color: #333;
 		min-width: 60px;
 	}
 
@@ -263,7 +292,7 @@
 		align-items: flex-start;
 		cursor: pointer;
 		font-size: 14px;
-		color: #333;
+		color: #000;
 		user-select: none;
 		line-height: 1.4;
 	}
@@ -275,7 +304,7 @@
 	.checkmark {
 		width: 18px;
 		height: 18px;
-		border: 2px solid #e1e5e9;
+		border: 2px solid #333;
 		border-radius: 4px;
 		margin-right: 10px;
 		position: relative;
@@ -285,8 +314,8 @@
 	}
 
 	.checkbox-container input[type="checkbox"]:checked + .checkmark {
-		background: #667eea;
-		border-color: #667eea;
+		background: #000;
+		border-color: #000;
 	}
 
 	.checkbox-container input[type="checkbox"]:checked + .checkmark::after {
@@ -322,8 +351,8 @@
 
 	.secondary-button {
 		background: transparent;
-		color: #667eea;
-		border: 2px solid #667eea;
+		color: #000;
+		border: 2px solid #000;
 		padding: 12px 24px;
 		border-radius: 10px;
 		font-size: 14px;
@@ -335,10 +364,100 @@
 	}
 
 	.secondary-button:hover {
-		background: #667eea;
+		background: #000;
 		color: white;
 		transform: translateY(-2px);
-		box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	}
+
+	:global(.auth-container) {
+		background-color: #fff;
+		border: 1px solid #e1e1e1;
+		padding: 2rem;
+		border-radius: 12px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		max-width: 500px;
+		margin: 2rem auto;
+	}
+
+	:global(.auth-header) {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	:global(.auth-title) {
+		color: #000;
+		font-size: 2rem;
+		font-weight: 700;
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.auth-subtitle) {
+		color: #666;
+		font-size: 1rem;
+	}
+
+	:global(.form-group) {
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.form-label) {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: #000;
+		font-weight: 500;
+	}
+
+	:global(.form-input) {
+		width: 100%;
+		padding: 0.75rem;
+		border: 2px solid #e1e1e1;
+		border-radius: 8px;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		background-color: #fff;
+		color: #000;
+	}
+
+	:global(.form-input:focus) {
+		outline: none;
+		border-color: #000;
+		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+	}
+
+	:global(.auth-button) {
+		width: 100%;
+		padding: 12px;
+		background-color: #000;
+		color: white;
+		border: none;
+		border-radius: 10px;
+		font-size: 16px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+
+	:global(.auth-button:hover) {
+		transform: translateY(-2px);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	}
+
+	:global(.auth-footer) {
+		text-align: center;
+		margin-top: 1.5rem;
+		color: #666;
+	}
+
+	:global(.auth-link) {
+		color: #000;
+		text-decoration: none;
+		font-weight: 500;
+		transition: all 0.3s ease;
+	}
+
+	:global(.auth-link:hover) {
+		text-decoration: underline;
 	}
 
 	@media (max-width: 480px) {

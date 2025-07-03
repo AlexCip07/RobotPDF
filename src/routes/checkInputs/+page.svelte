@@ -1,17 +1,73 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  
-  export let data: PageData;
+  /** @type {import('./$types').PageData} */
+  export let data;
   
   // Format date for display
   function formatDate(date: Date | string): string {
     return new Date(date).toLocaleString();
   }
+
+  let message = '';
+  let messageType = '';
+
+  async function handleDelete(userId: number) {
+    if (!confirm('Are you sure you want to delete this user?')) {
+      return;
+    }
+
+    const form = new FormData();
+    form.append('userId', userId.toString());
+
+    try {
+      const response = await fetch('?/deleteUser', {
+        method: 'POST',
+        body: form
+      });
+      window.location.href = '/checkInputs';
+    } catch (error) {
+      message = 'Failed to delete user';
+      messageType = 'error';
+    }
+  }
+
+  async function handleToggleAdmin(userId: number, currentAdminStatus: boolean) {
+    const form = new FormData();
+    form.append('userId', userId.toString());
+    form.append('adminStatus', (!currentAdminStatus).toString());
+
+    try {
+      const response = await fetch('?/toggleAdmin', {
+        method: 'POST',
+        body: form
+      });
+      window.location.href = '/checkInputs';
+    } catch (error) {
+      message = 'Failed to update admin status';
+      messageType = 'error';
+    }
+  }
 </script>
 
 <div class="container">
+  <div class="top-nav">
+    <button class="welcome-btn" on:click={() => window.location.href = '/welcome'}>
+      Go to Welcome Page
+    </button>
+    {#if data.currentUser}
+      <div class="user-info">
+        <p>Mr. {data.currentUser.firstName}</p>
+      </div>
+    {/if}
+  </div>
+
   <h1>Database Connection Status</h1>
   
+  {#if message}
+    <div class="message {messageType}">
+      {message}
+    </div>
+  {/if}
+
   <!-- Connection Status -->
   <div class="status-section">
     <h2>{data.status === 'success' ? '✅ ' + data.message : '❌ Database Connection Error'}</h2>
@@ -62,6 +118,7 @@
             <th>Admin</th>
             <th>Created At</th>
             <th>Updated At</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -75,6 +132,23 @@
               <td>{user.admin ? '✅ Yes' : '❌ No'}</td>
               <td>{formatDate(user.createdAt)}</td>
               <td>{formatDate(user.updatedAt)}</td>
+              <td class="actions">
+                {#if user.id !== data.currentUser.id && !user.admin}
+                  <button 
+                    class="delete-btn" 
+                    on:click={() => handleDelete(user.id)}
+                  >
+                    Delete
+                  </button>
+                {/if}
+                <button 
+                  class="admin-btn {user.admin ? 'revoke' : 'grant'}"
+                  on:click={() => handleToggleAdmin(user.id, user.admin)}
+                  disabled={user.id === data.currentUser.id}
+                >
+                  {user.admin ? 'Revoke Admin' : 'Make Admin'}
+                </button>
+              </td>
             </tr>
           {/each}
         </tbody>
@@ -178,5 +252,99 @@
   
   strong {
     font-weight: bold;
+  }
+  
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .welcome-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+
+  .welcome-btn:hover {
+    background-color: #218838;
+  }
+
+  .user-info {
+    position: static;
+  }
+
+  .user-info p {
+    margin: 0;
+  }
+
+  .message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+
+  .message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .delete-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .delete-btn:hover:not(:disabled) {
+    background-color: #c82333;
+  }
+
+  .admin-btn {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .admin-btn:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+
+  .admin-btn.revoke {
+    background-color: #6c757d;
+  }
+
+  .admin-btn.revoke:hover:not(:disabled) {
+    background-color: #545b62;
   }
 </style> 
