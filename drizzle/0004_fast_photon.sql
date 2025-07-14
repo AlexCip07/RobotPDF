@@ -1,0 +1,1 @@
+ALTER TABLE "tasks" ADD COLUMN "verification_type" varchar(1) NOT NULL DEFAULT 'A'; 

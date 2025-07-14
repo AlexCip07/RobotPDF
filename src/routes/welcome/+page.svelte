@@ -9,6 +9,7 @@
     {#if data.admin}
         <h1>Welcome MR. {data.firstName}, remember, you are an admin!</h1>
         <button class="check-inputs-button" on:click={() => goto('/checkInputs')}>Check Inputs</button>
+        <button class="check-inputs-button" on:click={() => goto('/progress')}>Progress Sheet</button>
     {:else}
         <h1>Hello, {data.firstName}!</h1>
     {/if}

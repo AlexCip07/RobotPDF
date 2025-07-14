@@ -187,7 +187,7 @@
 			<label class="checkbox-container">
 				<input type="checkbox" bind:checked={acceptTerms} />
 				<span class="checkmark"></span>
-				I agree to the <a href="#" class="auth-link">Terms of Service</a> and <a href="#" class="auth-link">Privacy Policy</a>
+				        I agree to the <a href="/terms" class="auth-link">Terms of Service</a> and <a href="/privacy" class="auth-link">Privacy Policy</a>
 			</label>
 		</div>
 
