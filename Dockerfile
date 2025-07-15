@@ -8,8 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY .npmrc ./
 
-# Install dependencies
-RUN npm ci --no-audit --no-fund
+# Install dependencies with explicit rollup native dependency
+RUN npm install --no-audit --no-fund && \
+    npm install @rollup/rollup-linux-x64-gnu --save-optional --no-audit --no-fund
 
 # Copy source code
 COPY . .
