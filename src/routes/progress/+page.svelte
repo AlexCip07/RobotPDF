@@ -5,7 +5,6 @@
     export let form;
     import { enhance } from '$app/forms';
     import { goto } from '$app/navigation';
-    import { browser } from '$app/environment';
     
     let showAddTaskForm = false;
     let showAddSubtaskForm = false;
@@ -444,66 +443,6 @@
                         {/if}
                     </div>
                 </div>
-            {:else}
-                <div class="placeholder-content">
-                    <h2>Progress Overview</h2>
-                    <p>Select a robot from the sidebar to view its tasks and progress.</p>
-                    
-                    <!-- Error Types Showcase -->
-                    <div class="error-types-showcase">
-                        <h3>Error Types Reference</h3>
-                        <div class="error-types-grid">
-                            <div class="error-type-card mechanical">
-                                <div class="error-designation">M</div>
-                                <h4>Mechanical</h4>
-                                <p>Hardware failures, mechanical component issues, structural problems</p>
-                                <ul>
-                                    <li>Motor failures</li>
-                                    <li>Bearing wear</li>
-                                    <li>Alignment issues</li>
-                                    <li>Structural damage</li>
-                                </ul>
-                            </div>
-                            <div class="error-type-card welding">
-                                <div class="error-designation">W</div>
-                                <h4>Welding</h4>
-                                <p>Welding process errors, arc issues, material defects</p>
-                                <ul>
-                                    <li>Arc instability</li>
-                                    <li>Welding defects</li>
-                                    <li>Material contamination</li>
-                                    <li>Heat distortion</li>
-                                </ul>
-                            </div>
-                            <div class="error-type-card simulation">
-                                <div class="error-designation">S</div>
-                                <h4>Simulation</h4>
-                                <p>Software simulation errors, path planning issues, virtual environment problems</p>
-                                <ul>
-                                    <li>Path calculation errors</li>
-                                    <li>Collision detection</li>
-                                    <li>Model inconsistencies</li>
-                                    <li>Virtual environment bugs</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h3>Total Robots</h3>
-                            <div class="stat-value">{data.robots.length}</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Active Tasks</h3>
-                            <div class="stat-value">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Completed Tasks</h3>
-                            <div class="stat-value">-</div>
-                        </div>
-                    </div>
-                </div>
             {/if}
         </div>
 
@@ -702,13 +641,15 @@
         </div>
     </div>
 
+    <!-- Logout button in top right corner -->
+    <button class="logout-btn-corner" on:click={() => goto('/login')}>
+        Logout
+    </button>
+
     <!-- Navigation buttons -->
     <div class="navigation">
         <button class="nav-button" on:click={() => goto('/welcome')}>
             ← Back to Dashboard
-        </button>
-        <button class="nav-button logout-btn" on:click={() => goto('/login')}>
-            Logout
         </button>
     </div>
 </div>
@@ -1163,41 +1104,7 @@
         color: #666;
     }
 
-    .placeholder-content h2 {
-        margin-top: 0;
-        margin-bottom: 20px;
-        font-size: 1.8rem;
-        color: black;
-    }
 
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-top: 30px;
-    }
-
-    .stat-card {
-        background: white;
-        border: 1px solid #e1e1e1;
-        border-radius: 6px;
-        padding: 20px;
-        text-align: center;
-    }
-
-    .stat-card h3 {
-        margin: 0 0 15px 0;
-        font-size: 1rem;
-        color: #666;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .stat-value {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: black;
-    }
 
     .navigation {
         display: flex;
@@ -1231,6 +1138,26 @@
     }
 
     .logout-btn:hover {
+        background: #c53030;
+        border-color: #c53030;
+    }
+
+    .logout-btn-corner {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background: #e53e3e;
+        border: 1px solid #e53e3e;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s;
+        z-index: 1000;
+    }
+
+    .logout-btn-corner:hover {
         background: #c53030;
         border-color: #c53030;
     }
@@ -1476,107 +1403,7 @@
         color: black;
     }
 
-    /* New styles for error types showcase */
-    .error-types-showcase {
-        background: #f0f0f0;
-        border: 1px solid #e1e1e1;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 30px;
-        text-align: left;
-    }
 
-    .error-types-showcase h3 {
-        margin-top: 0;
-        margin-bottom: 20px;
-        font-size: 1.5rem;
-        color: black;
-    }
-
-    .error-types-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
-
-    .error-type-card {
-        background: white;
-        border: 1px solid #e1e1e1;
-        border-radius: 6px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .error-type-card.mechanical {
-        border-color: #1976d2;
-        background: #f8fbff;
-    }
-
-    .error-type-card.welding {
-        border-color: #f57c00;
-        background: #fffaf5;
-    }
-
-    .error-type-card.simulation {
-        border-color: #7b1fa2;
-        background: #faf7fb;
-    }
-
-    .error-designation {
-        width: 60px;
-        height: 60px;
-        border: 4px solid black;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: black;
-        background: white;
-        margin: 0 auto 15px auto;
-    }
-
-    .error-type-card.mechanical .error-designation {
-        border-color: #1976d2;
-        color: #1976d2;
-    }
-
-    .error-type-card.welding .error-designation {
-        border-color: #f57c00;
-        color: #f57c00;
-    }
-
-    .error-type-card.simulation .error-designation {
-        border-color: #7b1fa2;
-        color: #7b1fa2;
-    }
-
-    .error-type-card h4 {
-        margin: 0 0 10px 0;
-        font-size: 1.2rem;
-        color: black;
-    }
-
-    .error-type-card p {
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 15px;
-    }
-
-    .error-type-card ul {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 15px 0;
-        text-align: left;
-    }
-
-    .error-type-card li {
-        font-size: 0.9rem;
-        color: #666;
-        margin-bottom: 5px;
-    }
 
     @media (max-width: 768px) {
         .main-content {
@@ -1630,10 +1457,6 @@
         
         .subtask-actions {
             align-self: flex-end;
-        }
-
-        .error-types-grid {
-            grid-template-columns: 1fr;
         }
     }
 
