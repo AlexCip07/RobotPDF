@@ -15,7 +15,8 @@ RUN npm install --no-audit --no-fund && \
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with placeholder DATABASE_URL
+ENV DATABASE_URL="postgresql://placeholder:placeholder@placeholder:5432/placeholder"
 RUN npm run build
 
 # Expose port
