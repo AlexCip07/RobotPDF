@@ -1,5 +1,5 @@
-# Use Node 18
-FROM node:18-alpine
+# Use Node 18 (Debian-based instead of Alpine)
+FROM node:18
 
 # Set working directory
 WORKDIR /app
