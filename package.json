@@ -18,7 +18,7 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
-		"postinstall": "npm list @rollup/rollup-linux-x64-gnu || true"
+		"postinstall": "echo 'Install completed successfully'"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
